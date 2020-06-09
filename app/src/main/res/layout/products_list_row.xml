@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -9,61 +8,61 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="4">
+        android:layout_weight="4"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/productName"
+            android:id="@+id/product_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="Nome do produto"
-            android:textStyle="bold"
+            android:textColor="#000"
             android:textSize="18sp"
-            android:layout_margin="5dp"
-            android:textColor="#000"/>
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/productCategory"
+            android:id="@+id/product_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="Categoria do produto"
-            android:textSize="15sp"
-            android:layout_margin="5dp"
-            android:textColor="#000"/>
+            android:textColor="#000"
+            android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/productDescription"
+            android:id="@+id/product_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="Data e hora da notificação"
-            android:textSize="15sp"
-            android:layout_margin="5dp"/>
+            android:textSize="15sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/productPrice"
+            android:id="@+id/product_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="R$2,00"
-            android:textSize="15sp"
-            android:layout_margin="5dp"
-            android:textColor="#000"/>
+            android:textColor="#000"
+            android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/productQuantity"
+            android:id="@+id/product_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="3 unidades"
-            android:textSize="15sp"
             android:layout_margin="5dp"
-            android:textColor="#000"/>
+            android:text="3 unidades"
+            android:textColor="#000"
+            android:textSize="15sp" />
 
     </LinearLayout>
 

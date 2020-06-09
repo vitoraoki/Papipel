@@ -19,11 +19,11 @@ class ProductsListAdapter (
         val view = layoutInflater.inflate(resource, null)
 
         // Get all the text views in the product row
-        val productNameView = view.findViewById<TextView>(R.id.productName)
-        val productCategoryView = view.findViewById<TextView>(R.id.productCategory)
-        val productDescriptionView = view.findViewById<TextView>(R.id.productDescription)
-        val productPriceView = view.findViewById<TextView>(R.id.productPrice)
-        val productQuantityView = view.findViewById<TextView>(R.id.productQuantity)
+        val productNameView = view.findViewById<TextView>(R.id.product_name)
+        val productCategoryView = view.findViewById<TextView>(R.id.product_category)
+        val productDescriptionView = view.findViewById<TextView>(R.id.product_description)
+        val productPriceView = view.findViewById<TextView>(R.id.product_price)
+        val productQuantityView = view.findViewById<TextView>(R.id.product_quantity)
 
         // Set the text views with the values from the product object
         var product = products.get(position)
