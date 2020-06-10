@@ -5,11 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import com.example.papipel.Adapter.OrderProductsListAdapter
 import com.example.papipel.Adapter.ProductsListAdapter
 import com.example.papipel.Database.DatabaseProducts
 import com.example.papipel.Models.Product
@@ -17,11 +20,12 @@ import com.example.papipel.R
 import com.example.papipel.R.layout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_products_list.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity(), View.OnClickListener,
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
 
     private val requestCode = 1
     private lateinit var path: String
@@ -30,6 +34,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_main)
+
+        // Load the spinner with the category
+        loadSpinnerCategories()
+
+        // Load the list of products for the first category on the list
+        startOrderProductsList(spinner_categories.selectedItem.toString())
 
         // Set listeners
         setButtonsListeners()
@@ -73,11 +83,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         return true
     }
 
+    // Load all the categories to put in the spinner
+    private fun loadSpinnerCategories() {
+        val categories = databaseProducts.getCategories()
+        spinner_categories.adapter = ArrayAdapter(this,
+            android.R.layout.simple_spinner_dropdown_item,
+            categories)
+        spinner_categories.onItemSelectedListener = this
+    }
+
     private fun setButtonsListeners() {
     }
 
     override fun onClick(v: View) {
         val id = v.id
+    }
+
+    // Handle when nothing is selected in the spinner (will not be used)
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
+
+    // Handle with an item selected in the spinner
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val id = parent?.id
+
+        // When the category is selected, load the list of products for this category
+        if (id == R.id.spinner_categories) {
+            val category = parent?.getItemAtPosition(position).toString()
+            startOrderProductsList(category)
+        }
     }
 
     // Start the Intent with the file chooser
@@ -144,13 +179,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
                 products.add(
                     Product(
                         product.get(0), product.get(1), product.get(2), product.get(3).toDouble(),
-                        product.get(4).toInt(), product.get(5)
+                        product.get(4).toInt(), product.get(5), product.get(6).toInt()
                     )
                 )
             }
             return products
         } catch (e: Exception) {
             return null
+        }
+    }
+
+    // Start the list of products with the first category
+    private fun startOrderProductsList(category: String) {
+
+        // Get the list of products by category from database
+        val products = databaseProducts.getProductByCategory(category)
+
+        // Inflate the listview with the products
+        val orderProductsListAdapter = OrderProductsListAdapter(
+            this,
+            layout.order_products_list_row,
+            products
+        )
+        order_products_list.adapter = orderProductsListAdapter
+
+        // Handle with the item selected from the list
+        order_products_list.setOnItemClickListener { parent, view, position, id ->
+            val orderProduct = orderProductsListAdapter.getItem(position)
+            Toast.makeText(this, orderProduct?.name, Toast.LENGTH_SHORT).show()
         }
     }
 }

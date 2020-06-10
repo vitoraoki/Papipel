@@ -2,39 +2,10 @@ package com.example.papipel.Database
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
-import android.widget.Toast
+import com.example.papipel.Models.Order
 import com.example.papipel.Models.Product
 
-val DATABASE_NAME = "Papipel"
-val TABLE_NAME = "Products"
-val DATABASE_VERSION = 1
-val COL_ID = "id"
-val COL_PRODUCT_ID = "product_id"
-val COL_NAME = "name"
-val COL_CATEGORY = "category"
-val COL_PRICE = "price"
-val COL_QUANTITY = "quantity"
-val COL_DESCRIPTION = "description"
-
-class DatabaseProducts( var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE " +
-                TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                COL_PRODUCT_ID + " VARCHAR(256)," +
-                COL_NAME + " VARCHAR(256)," +
-                COL_CATEGORY + " VARCHAR(256)," +
-                COL_PRICE + " VARCHAR(256)," +
-                COL_QUANTITY + " INTEGER," +
-                COL_DESCRIPTION + " VARCHAR(256))"
-        db?.execSQL(createTable)
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        TODO("Not yet implemented")
-    }
+class DatabaseProducts(context: Context) : DatabaseHelper(context) {
 
     // Populate the products database updating or inserting new products
     fun populateDatabase(products: MutableList<Product>) : Boolean {
@@ -51,13 +22,14 @@ class DatabaseProducts( var context: Context) : SQLiteOpenHelper(context, DATABA
             cv.put(COL_PRICE, product.price)
             cv.put(COL_QUANTITY, product.quantity)
             cv.put(COL_DESCRIPTION, product.description)
+            cv.put(COL_ACTIVE, product.active)
 
             // First try to update the row
-            var update = writeDB.update(TABLE_NAME, cv, "$COL_PRODUCT_ID = " + product.id, null)
+            var update = writeDB.update(TABLE_NAME_PRODUCTS, cv, "$COL_PRODUCT_ID = " + product.id, null)
 
             // If the row does not exist, insert it
             if (update == 0) {
-                insert = writeDB.insert(TABLE_NAME, null, cv)
+                insert = writeDB.insert(TABLE_NAME_PRODUCTS, null, cv)
 
                 // Verify if occurred and error in insert. If occurred, stop the process and return
                 if (insert == -1.toLong()) {
@@ -73,11 +45,11 @@ class DatabaseProducts( var context: Context) : SQLiteOpenHelper(context, DATABA
 
     // Get all the products in the list ordered by quantity of products
     fun getProductsOrderedByQuantity() : MutableList<Product> {
-        var products : MutableList<Product> = ArrayList()
+        var products = mutableListOf<Product>()
 
         // Query to get all the products
         val readDB = this.readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME ORDER BY $COL_QUANTITY ASC;"
+        val query = "SELECT * FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 ORDER BY $COL_QUANTITY ASC;"
         val result = readDB.rawQuery(query, null)
 
         if (result.moveToFirst()) {
@@ -95,6 +67,54 @@ class DatabaseProducts( var context: Context) : SQLiteOpenHelper(context, DATABA
 
         readDB.close()
         result.close()
+        return products
+    }
+
+    // Get the categories of the products
+    fun getCategories(): MutableList<String> {
+        var categories = mutableListOf<String>()
+
+        // Query to get all the categories
+        val readDB = this.readableDatabase
+        val query = "SELECT DISTINCT $COL_CATEGORY FROM $TABLE_NAME_PRODUCTS ORDER BY $COL_CATEGORY ASC;"
+        val result = readDB.rawQuery(query, null)
+
+        if (result.moveToFirst()) {
+            do {
+                var category = result.getString(result.getColumnIndex(COL_CATEGORY))
+                categories.add(category)
+            } while (result.moveToNext())
+        }
+
+        readDB.close()
+        result.close()
+
+        return categories
+    }
+
+    // Get the products given the category
+    fun getProductByCategory(category: String): MutableList<Product> {
+        var products = mutableListOf<Product>()
+
+        // Query to get all the products by the category
+        val readDB = this.readableDatabase
+        val query = "SELECT $COL_NAME, $COL_PRICE, $COL_QUANTITY " +
+                "FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 AND $COL_CATEGORY = '$category' ORDER BY $COL_NAME ASC;"
+        val result = readDB.rawQuery(query, null)
+
+        if (result.moveToFirst()) {
+            do {
+                var product = Product()
+                product.name = result.getString(result.getColumnIndex(COL_NAME))
+                product.price = result.getString(result.getColumnIndex(COL_PRICE)).toDouble()
+                product.quantity = result.getString(result.getColumnIndex(COL_QUANTITY)).toInt()
+                products.add(product)
+            } while (result.moveToNext())
+        }
+
+        readDB.close()
+        result.close()
+
         return products
     }
 }
