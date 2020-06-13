@@ -26,7 +26,7 @@ class OrderProductsListAdapter (
         // Set the text views with the values from the product object
         var product = products.get(position)
         productNameView.text = product.name
-        productPriceView.text = "R\$" + product.price.toString().replace(".", ",")
+        productPriceView.text = "R\$ " + product.price.toString().replace(".", ",")
         productQuantityView.text =
             product.quantity.toString() + if (product.quantity == 1) " unidade" else " unidades"
 

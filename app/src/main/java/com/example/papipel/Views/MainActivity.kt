@@ -3,24 +3,25 @@ package com.example.papipel.Views
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import com.example.papipel.Adapter.OrderProductsListAdapter
-import com.example.papipel.Adapter.ProductsListAdapter
 import com.example.papipel.Database.DatabaseProducts
 import com.example.papipel.Models.Product
 import com.example.papipel.R
 import com.example.papipel.R.layout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_products_list.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -30,16 +31,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     private val requestCode = 1
     private lateinit var path: String
     private val databaseProducts = DatabaseProducts(this)
+    private var orderItemsList = mutableListOf<Product>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_main)
-
-        // Load the spinner with the category
-        loadSpinnerCategories()
-
-        // Load the list of products for the first category on the list
-        startOrderProductsList(spinner_categories.selectedItem.toString())
 
         // Set listeners
         setButtonsListeners()
@@ -54,6 +50,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         // Make the menu clickable and deal with the click actions
         nav_view.bringToFront()
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Load the spinner with the category
+        loadSpinnerCategories()
+
+        // Load the list of products for the first category on the list
+        if (order_spinner_categories.selectedItem != null) {
+            startOrderProductsList(order_spinner_categories.selectedItem.toString())
+        }
     }
 
     override fun onBackPressed() {
@@ -86,17 +93,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     // Load all the categories to put in the spinner
     private fun loadSpinnerCategories() {
         val categories = databaseProducts.getCategories()
-        spinner_categories.adapter = ArrayAdapter(this,
-            android.R.layout.simple_spinner_dropdown_item,
-            categories)
-        spinner_categories.onItemSelectedListener = this
+
+        if (!categories.isEmpty()) {
+            order_spinner_categories.adapter = ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                categories)
+            order_spinner_categories.onItemSelectedListener = this
+        }
     }
 
     private fun setButtonsListeners() {
+        close_order.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         val id = v.id
+
+        // Deal with the click on the button of close an order
+        if (id == R.id.close_order) {
+
+            // Open a dialog with the list of items of the order and the confirmation or not to
+            // close the order
+            closeOrder()
+        }
     }
 
     // Handle when nothing is selected in the spinner (will not be used)
@@ -108,11 +127,73 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val id = parent?.id
 
-        // When the category is selected, load the list of products for this category
-        if (id == R.id.spinner_categories) {
+        if (id == R.id.order_spinner_categories) {
             val category = parent?.getItemAtPosition(position).toString()
             startOrderProductsList(category)
         }
+    }
+
+    // Start the list of products with the first category
+    private fun startOrderProductsList(category: String) {
+
+        // Get the list of products by category from database
+        val products = databaseProducts.getProductByCategory(category)
+
+        // Inflate the listview with the products
+        val orderProductsListAdapter = OrderProductsListAdapter(
+            this,
+            layout.order_products_list_row,
+            products
+        )
+        order_products_list.adapter = orderProductsListAdapter
+
+        // Handle with the item selected from the list
+        order_products_list.setOnItemClickListener { parent, view, position, id ->
+            val orderProduct = orderProductsListAdapter.getItem(position)
+            chooseQuantity(orderProduct)
+        }
+    }
+
+    // Open a dialog to choose the number of items for that product
+    private fun chooseQuantity(product: Product?) {
+        // Create a number picker
+        val numberPicker = NumberPicker(this)
+        numberPicker.maxValue = product!!.quantity
+        numberPicker.minValue = 1
+
+        // Build the alert dialog
+        val alertDialogBuilder = AlertDialog.Builder(this)
+            .setView(numberPicker)
+            .setTitle("Escolha a quantidade de items do pedido")
+        
+        // With the confirmation, add the item in the list of items of the order 
+        alertDialogBuilder.setPositiveButton("OK") { dialog, which -> 
+            orderItemsList.add(product)
+        }
+        
+        alertDialogBuilder.setNegativeButton("Cancelar") { dialog, which ->  }
+
+        //Show the dialog
+        alertDialogBuilder.show()
+    }
+
+    // Open a dialog with the list of items in the order and
+    private fun closeOrder() {
+
+        // Build the alert dialog
+        val alertDialogBuilder = AlertDialog.Builder(this)
+            .setTitle("Deseja concluir o pedido?")
+
+        // Set the positive button
+        alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
+            Toast.makeText(this, "Pedido concluído", Toast.LENGTH_SHORT).show()
+        }
+
+        // Set the negative button
+        alertDialogBuilder.setNegativeButton("Não") { dialog, which -> }
+
+        //Show the dialog
+        alertDialogBuilder.show()
     }
 
     // Start the Intent with the file chooser
@@ -186,27 +267,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             return products
         } catch (e: Exception) {
             return null
-        }
-    }
-
-    // Start the list of products with the first category
-    private fun startOrderProductsList(category: String) {
-
-        // Get the list of products by category from database
-        val products = databaseProducts.getProductByCategory(category)
-
-        // Inflate the listview with the products
-        val orderProductsListAdapter = OrderProductsListAdapter(
-            this,
-            layout.order_products_list_row,
-            products
-        )
-        order_products_list.adapter = orderProductsListAdapter
-
-        // Handle with the item selected from the list
-        order_products_list.setOnItemClickListener { parent, view, position, id ->
-            val orderProduct = orderProductsListAdapter.getItem(position)
-            Toast.makeText(this, orderProduct?.name, Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -19,62 +19,71 @@
         app:headerLayout="@layout/header_navigation_drawer"
         app:menu="@menu/main_menu" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".Views.MainActivity">
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar" />
-
-        <!-- Spinner to choose the category   -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
+
+            <!-- Spinner to choose the category   -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Selecione a categoria para carregar a lista de produtos:"
-                android:textColor="@color/text"
-                android:textSize="16sp" />
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp">
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:text="Selecione a categoria para carregar a lista de produtos:"
+                    android:textColor="@color/text"
+                    android:textSize="16sp" />
 
-            <Spinner
-                android:id="@+id/spinner_categories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/spinner_border"
-                android:spinnerMode="dropdown" />
+                <Spinner
+                    android:id="@+id/order_spinner_categories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/spinner_border"
+                    android:spinnerMode="dropdown" />
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <!-- List with the products of that category -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp">
+            <!-- List with the products of that category -->
             <ListView
                 android:id="@+id/order_products_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:paddingTop="10dp"/>
+
         </LinearLayout>
 
-    </LinearLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/close_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/negative"
+            app:borderWidth="0dp"
+            app:srcCompat="@android:drawable/ic_popup_sync" />
+
+    </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

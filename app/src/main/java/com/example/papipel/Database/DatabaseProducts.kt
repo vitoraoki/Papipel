@@ -99,7 +99,8 @@ class DatabaseProducts(context: Context) : DatabaseHelper(context) {
         // Query to get all the products by the category
         val readDB = this.readableDatabase
         val query = "SELECT $COL_NAME, $COL_PRICE, $COL_QUANTITY " +
-                "FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 AND $COL_CATEGORY = '$category' ORDER BY $COL_NAME ASC;"
+                "FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 AND $COL_CATEGORY = '$category' " +
+                "AND $COL_QUANTITY > 0 ORDER BY $COL_NAME ASC;"
         val result = readDB.rawQuery(query, null)
 
         if (result.moveToFirst()) {
