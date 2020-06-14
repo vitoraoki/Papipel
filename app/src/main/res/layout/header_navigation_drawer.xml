@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Papipel"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textColor="@color/common_google_signin_btn_text_dark_pressed"
         android:textSize="30sp"
         android:textStyle="bold" />
 

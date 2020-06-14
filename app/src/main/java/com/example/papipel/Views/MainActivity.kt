@@ -2,8 +2,9 @@ package com.example.papipel.Views
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -14,14 +15,17 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import com.example.papipel.Adapter.OrderProductsListAdapter
+import com.example.papipel.Adapter.OrderProductsAdapter
+import com.example.papipel.Adapter.ProductsByCategoryListAdapter
 import com.example.papipel.Database.DatabaseProducts
 import com.example.papipel.Models.Product
 import com.example.papipel.R
 import com.example.papipel.R.layout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -29,9 +33,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
 
     private val requestCode = 1
-    private lateinit var path: String
     private val databaseProducts = DatabaseProducts(this)
-    private var orderItemsList = mutableListOf<Product>()
+    private var orderProductsHash = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,10 +107,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun setButtonsListeners() {
         close_order.setOnClickListener(this)
+        btn_add_items.setOnClickListener(this)
+        btn_see_order.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         val id = v.id
+        val typedValue = TypedValue()
 
         // Deal with the click on the button of close an order
         if (id == R.id.close_order) {
@@ -115,6 +121,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             // Open a dialog with the list of items of the order and the confirmation or not to
             // close the order
             closeOrder()
+        }
+        // See the view to add items to the order
+        else if (id == R.id.btn_add_items) {
+            theme.resolveAttribute(R.attr.selectableItemBackground, typedValue, true)
+
+            btn_add_items.background = ContextCompat.getDrawable(this, typedValue.resourceId)
+            btn_add_items.setTextColor(ContextCompat.getColor(this, R.color.thirdColor))
+
+            btn_see_order.background = ContextCompat.getDrawable(this, R.drawable.btn_bottom_left)
+            btn_see_order.setTextColor(Color.parseColor("#FFFFFF"))
+
+            // Show the elements for add an item to the order
+            layout_select_category.visibility = View.VISIBLE
+            products_by_category_list.visibility = View.VISIBLE
+            order_products_list.visibility = View.GONE
+        }
+        // See the view to see the items for the order
+        else if (id == R.id.btn_see_order) {
+            theme.resolveAttribute(R.attr.selectableItemBackground, typedValue, true)
+
+            btn_see_order.background = ContextCompat.getDrawable(this, typedValue.resourceId)
+            btn_see_order.setTextColor(ContextCompat.getColor(this, R.color.thirdColor))
+
+            btn_add_items.background = ContextCompat.getDrawable(this, R.drawable.btn_bottom_right)
+            btn_add_items.setTextColor(Color.parseColor("#FFFFFF"))
+
+            // Hide the elements for add an item to the order
+            layout_select_category.visibility = View.GONE
+            products_by_category_list.visibility = View.GONE
+            order_products_list.visibility = View.VISIBLE
         }
     }
 
@@ -140,17 +176,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val products = databaseProducts.getProductByCategory(category)
 
         // Inflate the listview with the products
-        val orderProductsListAdapter = OrderProductsListAdapter(
+        val productsByCategoryListAdapter = ProductsByCategoryListAdapter(
             this,
-            layout.order_products_list_row,
+            layout.products_by_category_list_row,
             products
         )
-        order_products_list.adapter = orderProductsListAdapter
+        products_by_category_list.adapter = productsByCategoryListAdapter
 
         // Handle with the item selected from the list
-        order_products_list.setOnItemClickListener { parent, view, position, id ->
-            val orderProduct = orderProductsListAdapter.getItem(position)
-            chooseQuantity(orderProduct)
+        products_by_category_list.setOnItemClickListener { parent, view, position, id ->
+            val product = productsByCategoryListAdapter.getItem(position)
+            chooseQuantity(product)
         }
     }
 
@@ -165,19 +201,71 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val alertDialogBuilder = AlertDialog.Builder(this)
             .setView(numberPicker)
             .setTitle("Escolha a quantidade de items do pedido")
-        
-        // With the confirmation, add the item in the list of items of the order 
-        alertDialogBuilder.setPositiveButton("OK") { dialog, which -> 
-            orderItemsList.add(product)
+
+        // With the confirmation, add the item in the list of items of the order
+        alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
+            try {
+                orderProductsHash.put(product.name, numberPicker.value)
+                inflateProductsOfOrder()
+                Toast.makeText(this, "Produto adicionado ao pedido", Toast.LENGTH_SHORT).show()
+            } catch (e: java.lang.Exception) {
+                Toast.makeText(this, "Erro ao adicionar o produto ao pedido", Toast.LENGTH_SHORT).show()
+            }
         }
-        
+
         alertDialogBuilder.setNegativeButton("Cancelar") { dialog, which ->  }
 
         //Show the dialog
         alertDialogBuilder.show()
     }
 
-    // Open a dialog with the list of items in the order and
+    // Inflate the list of products in the order
+    private fun inflateProductsOfOrder() {
+
+        // Create the list with the products for the order
+        var products = mutableListOf<Product>()
+        val keys = orderProductsHash.keys()
+        keys.forEach { key ->
+            var product = Product()
+            product.name = key
+            product.quantity = orderProductsHash.get(key) as Int
+            products.add(product)
+        }
+
+        // Inflate the listview with the products
+        val orderProductsListAdapter = OrderProductsAdapter(
+            this,
+            layout.order_products_list_row,
+            products
+        )
+        order_products_list.adapter = orderProductsListAdapter
+
+        // Handle with the item selected from the list
+        order_products_list.setOnItemClickListener { parent, view, position, id ->
+            val product = orderProductsListAdapter.getItem(position)
+            removeProductOrder(product)
+        }
+    }
+
+    // Remove product for the order
+    private fun removeProductOrder(product: Product?) {
+        // Build the alert dialog
+        val alertDialogBuilder = AlertDialog.Builder(this)
+            .setTitle("Deseja remover o produto do pedido?")
+
+        // With the confirmation, add the item in the list of items of the order
+        alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
+            orderProductsHash.remove(product?.name)
+            inflateProductsOfOrder()
+        }
+
+        alertDialogBuilder.setNegativeButton("Cancelar") { dialog, which ->  }
+
+        //Show the dialog
+        alertDialogBuilder.show()
+    }
+
+    // Open a dialog to confirm the close of the order and save the order in the database
     private fun closeOrder() {
 
         // Build the alert dialog
@@ -186,6 +274,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         // Set the positive button
         alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
+            orderProductsHash = JSONObject()
+            inflateProductsOfOrder()
             Toast.makeText(this, "Pedido concluído", Toast.LENGTH_SHORT).show()
         }
 

@@ -11,11 +11,11 @@
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
+        android:visibility="visible"
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:visibility="visible"
         app:headerLayout="@layout/header_navigation_drawer"
         app:menu="@menu/main_menu" />
 
@@ -34,8 +34,41 @@
                 android:id="@+id/toolbar"
                 layout="@layout/toolbar" />
 
+            <!-- Buttons to add items to the order or see the order items -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingBottom="5dp"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/btn_add_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Adicionar itens"
+                    android:background="?android:attr/selectableItemBackground"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textColor="@color/thirdColor"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/btn_see_order"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ver pedido"
+                    android:background="@drawable/btn_bottom_left"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textColor="#FFFFFF"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
             <!-- Spinner to choose the category   -->
             <LinearLayout
+                android:id="@+id/layout_select_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -63,13 +96,22 @@
 
             <!-- List with the products of that category -->
             <ListView
-                android:id="@+id/order_products_list"
+                android:id="@+id/products_by_category_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"/>
 
+            <!-- List with the products of the order -->
+            <ListView
+                android:id="@+id/order_products_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:paddingTop="10dp"/>
+
         </LinearLayout>
 
+        <!-- Floating button to close the order -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/close_order"
             android:layout_width="wrap_content"
