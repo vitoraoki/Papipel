@@ -19,7 +19,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import com.example.papipel.Adapter.OrderProductsAdapter
 import com.example.papipel.Adapter.ProductsByCategoryListAdapter
+import com.example.papipel.Database.DatabaseOrderProduct
+import com.example.papipel.Database.DatabaseOrders
 import com.example.papipel.Database.DatabaseProducts
+import com.example.papipel.Models.Order
+import com.example.papipel.Models.OrderProduct
 import com.example.papipel.Models.Product
 import com.example.papipel.R
 import com.example.papipel.R.layout
@@ -34,7 +38,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
     private val requestCode = 1
     private val databaseProducts = DatabaseProducts(this)
+    private val databaseOrders = DatabaseOrders(this)
+    private val databaseOrderProduct = DatabaseOrderProduct(this)
     private var orderProductsHash = JSONObject()
+    var totalOrderPrice = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +68,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         loadSpinnerCategories()
 
         // Load the list of products for the first category on the list
-        if (order_spinner_categories.selectedItem != null) {
-            startOrderProductsList(order_spinner_categories.selectedItem.toString())
+        if (spn_order_spinner_categories.selectedItem != null) {
+            inflateOrderProductsList(spn_order_spinner_categories.selectedItem.toString())
         }
     }
 
@@ -85,7 +92,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             val intent = Intent(this, ProductsListActivity::class.java)
             startActivity(intent)
         } else if (item.itemId == R.id.activity_orders_list) {
-            Toast.makeText(this, "Em breve", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, OrdersListActivity::class.java)
+            startActivity(intent)
         }
 
         // Close the drawer after the button is clicked and unselect all the items
@@ -98,15 +106,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val categories = databaseProducts.getCategories()
 
         if (!categories.isEmpty()) {
-            order_spinner_categories.adapter = ArrayAdapter(this,
+            spn_order_spinner_categories.adapter = ArrayAdapter(this,
                 android.R.layout.simple_spinner_dropdown_item,
                 categories)
-            order_spinner_categories.onItemSelectedListener = this
+            spn_order_spinner_categories.onItemSelectedListener = this
         }
     }
 
     private fun setButtonsListeners() {
-        close_order.setOnClickListener(this)
+        btn_close_order.setOnClickListener(this)
         btn_add_items.setOnClickListener(this)
         btn_see_order.setOnClickListener(this)
     }
@@ -116,7 +124,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         val typedValue = TypedValue()
 
         // Deal with the click on the button of close an order
-        if (id == R.id.close_order) {
+        if (id == R.id.btn_close_order) {
 
             // Open a dialog with the list of items of the order and the confirmation or not to
             // close the order
@@ -133,9 +141,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             btn_see_order.setTextColor(Color.parseColor("#FFFFFF"))
 
             // Show the elements for add an item to the order
-            layout_select_category.visibility = View.VISIBLE
-            products_by_category_list.visibility = View.VISIBLE
-            order_products_list.visibility = View.GONE
+            lyt_select_category.visibility = View.VISIBLE
+            lstv_products_by_category_list.visibility = View.VISIBLE
+            lstv_order_products_list.visibility = View.GONE
+            lyt_total_order_price.visibility = View.GONE
         }
         // See the view to see the items for the order
         else if (id == R.id.btn_see_order) {
@@ -148,9 +157,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             btn_add_items.setTextColor(Color.parseColor("#FFFFFF"))
 
             // Hide the elements for add an item to the order
-            layout_select_category.visibility = View.GONE
-            products_by_category_list.visibility = View.GONE
-            order_products_list.visibility = View.VISIBLE
+            lyt_select_category.visibility = View.GONE
+            lstv_products_by_category_list.visibility = View.GONE
+            lstv_order_products_list.visibility = View.VISIBLE
+            lyt_total_order_price.visibility = View.VISIBLE
         }
     }
 
@@ -163,14 +173,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val id = parent?.id
 
-        if (id == R.id.order_spinner_categories) {
+        if (id == R.id.spn_order_spinner_categories) {
             val category = parent?.getItemAtPosition(position).toString()
-            startOrderProductsList(category)
+            inflateOrderProductsList(category)
         }
     }
 
-    // Start the list of products with the first category
-    private fun startOrderProductsList(category: String) {
+    // Inflate the list of products with the first category
+    private fun inflateOrderProductsList(category: String) {
 
         // Get the list of products by category from database
         val products = databaseProducts.getProductByCategory(category)
@@ -181,10 +191,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             layout.products_by_category_list_row,
             products
         )
-        products_by_category_list.adapter = productsByCategoryListAdapter
+        lstv_products_by_category_list.adapter = productsByCategoryListAdapter
 
         // Handle with the item selected from the list
-        products_by_category_list.setOnItemClickListener { parent, view, position, id ->
+        lstv_products_by_category_list.setOnItemClickListener { parent, view, position, id ->
             val product = productsByCategoryListAdapter.getItem(position)
             chooseQuantity(product)
         }
@@ -205,7 +215,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         // With the confirmation, add the item in the list of items of the order
         alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
             try {
-                orderProductsHash.put(product.name, numberPicker.value)
+                var orderProduct = Product()
+                orderProduct.name = product.name
+                orderProduct.productId = product.productId
+                orderProduct.quantity = numberPicker.value
+                orderProduct.price = numberPicker.value * product.price
+                orderProductsHash.put(product.name, orderProduct)
                 inflateProductsOfOrder()
                 Toast.makeText(this, "Produto adicionado ao pedido", Toast.LENGTH_SHORT).show()
             } catch (e: java.lang.Exception) {
@@ -226,10 +241,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
         var products = mutableListOf<Product>()
         val keys = orderProductsHash.keys()
         keys.forEach { key ->
-            var product = Product()
-            product.name = key
-            product.quantity = orderProductsHash.get(key) as Int
+            val product = orderProductsHash.get(key) as Product
             products.add(product)
+            totalOrderPrice += product.price
         }
 
         // Inflate the listview with the products
@@ -238,13 +252,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
             layout.order_products_list_row,
             products
         )
-        order_products_list.adapter = orderProductsListAdapter
+        lstv_order_products_list.adapter = orderProductsListAdapter
 
         // Handle with the item selected from the list
-        order_products_list.setOnItemClickListener { parent, view, position, id ->
+        lstv_order_products_list.setOnItemClickListener { parent, view, position, id ->
             val product = orderProductsListAdapter.getItem(position)
             removeProductOrder(product)
         }
+
+        // Set the total price of the order
+        var totalOrderPriceString = totalOrderPrice.toString().replace(".", ",")
+        total_order_price.text = "Total: R$ $totalOrderPriceString"
     }
 
     // Remove product for the order
@@ -274,9 +292,52 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
 
         // Set the positive button
         alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
-            orderProductsHash = JSONObject()
-            inflateProductsOfOrder()
-            Toast.makeText(this, "Pedido concluído", Toast.LENGTH_SHORT).show()
+
+            var resultInsertOrderProducts = false
+
+            // If the order is empty, do not do anything
+            if (totalOrderPrice > 0.0) {
+                // Insert the order in the database
+                var order = Order()
+                order.value = totalOrderPrice
+                val orderID = databaseOrders.insertOrder(order)
+
+                // Insert the products of the order in the table OrderProducts
+                if (orderID != -1.toLong()) {
+                    var orderProductsList = mutableListOf<OrderProduct>()
+                    orderProductsHash.keys().forEach { key ->
+                        val product = orderProductsHash.get(key) as Product
+                        val orderProduct = OrderProduct(orderID.toInt(), product.productId, product.quantity)
+                        orderProductsList.add(orderProduct)
+                    }
+                    resultInsertOrderProducts = databaseOrderProduct.insertOrderProductsList(orderProductsList)
+                }
+
+                // Update the quantity of products in the database
+                var products = mutableListOf<Product>()
+                orderProductsHash.keys().forEach { key ->
+                    products.add(orderProductsHash.get(key) as Product)
+                }
+                val resultUpdateQuantityProducts = databaseProducts.updateProductQuantity(products)
+
+                if ((orderID != -1.toLong()) && resultInsertOrderProducts && resultUpdateQuantityProducts) {
+                    // Clean the totalPrice of the order and the hash with the products of the order
+                    totalOrderPrice = 0.0
+                    orderProductsHash = JSONObject()
+
+                    // Reload all the data to create an order
+                    loadSpinnerCategories()
+                    inflateOrderProductsList(spn_order_spinner_categories.selectedItem.toString())
+                    inflateProductsOfOrder()
+
+                    Toast.makeText(this, "Pedido concluído", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Erro ao concluir o pedido", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Pedido vazio", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         // Set the negative button

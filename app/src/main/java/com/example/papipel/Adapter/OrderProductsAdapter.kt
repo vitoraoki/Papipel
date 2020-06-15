@@ -20,8 +20,8 @@ var products: MutableList<Product>) : ArrayAdapter<Product>(mContext, resource, 
         val view = layoutInflater.inflate(resource, null)
 
         // Get all the text views in the order product row
-        val productNameView = view.findViewById<TextView>(R.id.order_product_name)
-        val productQuantityView = view.findViewById<TextView>(R.id.order_product_quantity)
+        val productNameView = view.findViewById<TextView>(R.id.txtv_order_product_name)
+        val productQuantityView = view.findViewById<TextView>(R.id.txtv_order_product_quantity)
 
         // Set the text views with the values from the product object
         var product = products.get(position)

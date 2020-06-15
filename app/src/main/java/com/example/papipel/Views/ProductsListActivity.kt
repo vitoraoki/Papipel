@@ -40,6 +40,6 @@ class ProductsListActivity : AppCompatActivity() {
             R.layout.products_list_row,
             products
         )
-        products_list.adapter = productsListAdapter
+        lstv_products_list.adapter = productsListAdapter
     }
 }

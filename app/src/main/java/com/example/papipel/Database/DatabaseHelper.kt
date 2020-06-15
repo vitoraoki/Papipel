@@ -34,17 +34,23 @@ val CREATE_TABLE_PRODUCTS = "CREATE TABLE " + TABLE_NAME_PRODUCTS + " (" +
 // Constants for the table Order
 val TABLE_NAME_ORDERS = "Orders"
 val COL_VALUE = "value"
-val COL_DATE = "date"
 val CREATE_TABLE_ORDERS = "CREATE TABLE " + TABLE_NAME_ORDERS + " (" +
         COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-        COL_PRODUCT_ID + " VARCHAR(256)," +
-        COL_VALUE + " VARCHAR(256)," +
-        COL_DATE + " VARCHAR(256))"
+        COL_VALUE + " VARCHAR(256))"
+
+// Constanst for the table OrderProducts
+val TABLE_NAME_ORDER_PRODUCTS = "OrderProducts"
+val COL_ORDER_ID = "order_id"
+val CREATE_TABLE_ORDER_PRODUCTS = "CREATE TABLE " + TABLE_NAME_ORDER_PRODUCTS + " (" +
+        COL_ORDER_ID + " INTEGER, " +
+        COL_PRODUCT_ID + " VARCHAR(256), " +
+        COL_QUANTITY + " INTEGER)"
 
 open class DatabaseHelper(var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(CREATE_TABLE_PRODUCTS)
         db?.execSQL(CREATE_TABLE_ORDERS)
+        db?.execSQL(CREATE_TABLE_ORDER_PRODUCTS)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

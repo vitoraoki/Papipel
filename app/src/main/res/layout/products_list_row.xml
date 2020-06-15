@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/product_name"
+            android:id="@+id/txtv_product_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -22,7 +22,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/product_category"
+            android:id="@+id/txtv_product_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -31,7 +31,7 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/product_description"
+            android:id="@+id/txtv_product_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -47,7 +47,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/product_price"
+            android:id="@+id/txtv_product_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -56,7 +56,7 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/product_quantity"
+            android:id="@+id/txtv_product_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"

@@ -12,9 +12,7 @@ class DatabaseOrders(context: Context) : DatabaseHelper(context) {
         val writeDB = this.writableDatabase
         var cv = ContentValues()
 
-        cv.put(COL_PRODUCT_ID, order.productId)
         cv.put(COL_VALUE, order.value)
-        cv.put(COL_DATE, order.date)
 
         return writeDB.insert(TABLE_NAME_ORDERS, null, cv)
     }
@@ -25,15 +23,14 @@ class DatabaseOrders(context: Context) : DatabaseHelper(context) {
 
         // Query to get all the orders
         val readDB = this.readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME_ORDERS ORDER BY $COL_DATE ASC;"
+        val query = "SELECT * FROM $TABLE_NAME_ORDERS;"
         val result = readDB.rawQuery(query, null)
 
         if (result.moveToFirst()) {
             do {
                 var order = Order()
-                order.productId = result.getString(result.getColumnIndex(COL_PRODUCT_ID))
+                order.id = result.getString(result.getColumnIndex(COL_ID))
                 order.value = result.getString(result.getColumnIndex(COL_VALUE)).toDouble()
-                order.date = result.getString(result.getColumnIndex(COL_DATE))
                 orders.add(order)
             } while (result.moveToNext())
         }

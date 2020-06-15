@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Views.ProductsListActivity">
+    tools:context=".Views.OrdersListActivity">
 
     <ListView
-        android:id="@+id/lstv_products_list"
+        android:id="@+id/lstv_orders_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
