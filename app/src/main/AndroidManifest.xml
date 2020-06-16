@@ -15,10 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Views.OrdersListActivity"></activity>
-        <activity android:name=".Views.ProductsListActivity" />
-        <activity
-            android:name=".Views.MainActivity"
+        <activity android:name=".Views.MainActivity"
             android:theme="@style/Main.AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Views.OrdersListActivity" />
+        <activity android:name=".Views.ProductsListActivity" />
     </application>
 
 </manifest>

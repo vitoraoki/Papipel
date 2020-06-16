@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.CreateOrderFragment"
+    android:orientation="vertical">
+
+    <!-- Spinner to choose the category   -->
+    <LinearLayout
+        android:id="@+id/lyt_select_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:text="Selecione a categoria para carregar a lista de produtos:"
+            android:textColor="@color/text"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/spn_order_spinner_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_border"
+            android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
+    <!-- List with the products of that category -->
+    <ListView
+        android:id="@+id/lstv_products_by_category_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"/>
+
+</LinearLayout>
