@@ -2,7 +2,9 @@ package com.example.papipel.Database
 
 import android.content.ContentValues
 import android.content.Context
+import com.example.papipel.Models.Order
 import com.example.papipel.Models.OrderProduct
+import com.example.papipel.Models.Product
 
 class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
 
@@ -24,5 +26,30 @@ class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
         }
 
         return true
+    }
+
+    // Get the products given an order
+    fun getProductsGivenOrder(order: Order) : MutableList<Product> {
+
+        // The list of products
+        var products = mutableListOf<Product>()
+
+        // Query to get all the products given an order
+        val readDB = this.readableDatabase
+        val query = "SELECT $COL_NAME, OP.$COL_QUANTITY FROM $TABLE_NAME_ORDER_PRODUCTS as OP " +
+                "INNER JOIN $TABLE_NAME_PRODUCTS as P ON OP.$COL_PRODUCT_ID = P.$COL_PRODUCT_ID " +
+                "WHERE OP.$COL_ORDER_ID = ${order.id};"
+        val result = readDB.rawQuery(query, null)
+
+        if (result.moveToFirst()) {
+            do {
+                var product = Product()
+                product.name = result.getString(result.getColumnIndex(COL_NAME))
+                product.quantity = result.getString(result.getColumnIndex(COL_QUANTITY)).toInt()
+                products.add(product)
+            } while (result.moveToNext())
+        }
+
+        return products
     }
 }

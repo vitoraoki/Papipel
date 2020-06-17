@@ -2,7 +2,6 @@ package com.example.papipel.Fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -141,7 +140,7 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 orderProduct.productId = product.productId
                 orderProduct.quantity = numberPicker.value
                 orderProduct.price = numberPicker.value * product.price
-                appViewModel.orderProductsHash.put(product.name, orderProduct)
+                appViewModel.orderProductsHash.put(product.productId, orderProduct)
                 Toast.makeText(requireContext(), "Produto adicionado ao pedido", Toast.LENGTH_SHORT)
                     .show()
             } catch (e: java.lang.Exception) {

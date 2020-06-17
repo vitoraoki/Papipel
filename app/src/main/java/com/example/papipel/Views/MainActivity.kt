@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 // Insert the products of the order in the table OrderProducts
                 if (orderID != -1.toLong()) {
                     var orderProductsList = mutableListOf<OrderProduct>()
-                    appViewModel.orderProductsHash.keys().forEach { key ->
+                    appViewModel.orderProductsHash.keys.forEach { key ->
                         val product = appViewModel.orderProductsHash.get(key) as Product
                         val orderProduct = OrderProduct(orderID.toInt(), product.productId, product.quantity)
                         orderProductsList.add(orderProduct)
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 // Update the quantity of products in the database
                 var products = mutableListOf<Product>()
-                appViewModel.orderProductsHash.keys().forEach { key ->
+                appViewModel.orderProductsHash.keys.forEach { key ->
                     products.add(appViewModel.orderProductsHash.get(key) as Product)
                 }
                 val resultUpdateQuantityProducts = databaseProducts.updateProductQuantity(products)
@@ -139,15 +139,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if ((orderID != -1.toLong()) && resultInsertOrderProducts && resultUpdateQuantityProducts) {
                     // Clean the totalPrice of the order and the hash with the products of the order
                     appViewModel.totalOrderPrice = 0.00
-                    appViewModel.orderProductsHash = JSONObject()
+                    appViewModel.orderProductsHash = HashMap<String, Product>()
 
                     // Reload all the data to create an order
-                    val createOrderFragment = fragmentAdpter.getItem(0) as CreateOrderFragment
-                    val orderProductsFragment = fragmentAdpter.getItem(1) as OrderProductsFragment
-
-                    createOrderFragment.loadSpinnerCategories()
-                    createOrderFragment.inflateOrderProductsList()
-                    orderProductsFragment.onResume()
+                    reloadDataFragments()
 
                     Toast.makeText(this, "Pedido concluído", Toast.LENGTH_SHORT).show()
                 } else {
@@ -215,6 +210,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val result = databaseProducts.populateDatabase(products)
                 var message = ""
                 if (result) {
+
+                    // Reload all the data to create an order
+                    reloadDataFragments()
+
                     message = "Banco de dados atualizado"
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 } else {
@@ -256,5 +255,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } catch (e: Exception) {
             return null
         }
+    }
+
+    private fun reloadDataFragments() {
+        // Reload all the data to create an order
+        val createOrderFragment = fragmentAdpter.getItem(0) as CreateOrderFragment
+        val orderProductsFragment = fragmentAdpter.getItem(1) as OrderProductsFragment
+
+        createOrderFragment.loadSpinnerCategories()
+        createOrderFragment.inflateOrderProductsList()
+        orderProductsFragment.onResume()
     }
 }

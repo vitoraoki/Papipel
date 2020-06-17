@@ -65,9 +65,8 @@ class OrderProductsFragment : Fragment() {
 
         // Create the list with the products for the order
         var products = mutableListOf<Product>()
-        val keys = appViewModel.orderProductsHash.keys()
         appViewModel.totalOrderPrice = 0.00
-        keys.forEach { key ->
+        appViewModel.orderProductsHash.keys.forEach { key ->
             val product = appViewModel.orderProductsHash.get(key) as Product
             products.add(product)
             appViewModel.totalOrderPrice += product.price
@@ -100,7 +99,7 @@ class OrderProductsFragment : Fragment() {
 
         // With the confirmation, add the item in the list of items of the order
         alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
-            appViewModel.orderProductsHash.remove(product?.name)
+            appViewModel.orderProductsHash.remove(product?.productId)
             inflateProductsOfOrder()
         }
 

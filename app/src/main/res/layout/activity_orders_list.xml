@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".Views.OrdersListActivity">
 
-    <ListView
-        android:id="@+id/lstv_orders_list"
+    <ExpandableListView
+        android:id="@+id/elstv_orders_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
