@@ -102,7 +102,8 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // Get the list of products by category from database
         val databaseProducts = DatabaseProducts(requireContext())
-        val products = databaseProducts.getProductByCategory(spn_order_spinner_categories.selectedItem.toString())
+        val products = databaseProducts
+            .getProductByCategory(spn_order_spinner_categories.selectedItem.toString())
 
         // Inflate the listview with the products
         val productsByCategoryListAdapter = ProductsByCategoryListAdapter(
@@ -136,11 +137,12 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
         alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
             try {
                 var orderProduct = Product()
+                orderProduct.id = product.id
                 orderProduct.name = product.name
                 orderProduct.productId = product.productId
                 orderProduct.quantity = numberPicker.value
                 orderProduct.price = numberPicker.value * product.price
-                appViewModel.orderProductsHash.put(product.productId, orderProduct)
+                appViewModel.orderProductsHash.put(product.id, orderProduct)
                 Toast.makeText(requireContext(), "Produto adicionado ao pedido", Toast.LENGTH_SHORT)
                     .show()
             } catch (e: java.lang.Exception) {

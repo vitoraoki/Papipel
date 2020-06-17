@@ -98,12 +98,12 @@ class OrderProductsFragment : Fragment() {
             .setTitle("Deseja remover o produto do pedido?")
 
         // With the confirmation, add the item in the list of items of the order
-        alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
-            appViewModel.orderProductsHash.remove(product?.productId)
+        alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
+            appViewModel.orderProductsHash.remove(product?.id)
             inflateProductsOfOrder()
         }
 
-        alertDialogBuilder.setNegativeButton("Cancelar") { dialog, which ->  }
+        alertDialogBuilder.setNegativeButton("Não") { dialog, which ->  }
 
         //Show the dialog
         alertDialogBuilder.show()

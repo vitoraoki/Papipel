@@ -1,6 +1,7 @@
 package com.example.papipel.Models
 
 class Product {
+    var id = ""
     var productId = ""
     var name = ""
     var category = ""

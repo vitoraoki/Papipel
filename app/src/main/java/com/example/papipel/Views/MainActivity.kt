@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
 
             var resultInsertOrderProducts = false
+            var resultUpdateQuantityProducts = false
 
             // If the order is empty, do not do anything
             if (appViewModel.totalOrderPrice > 0.0) {
@@ -123,18 +124,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     var orderProductsList = mutableListOf<OrderProduct>()
                     appViewModel.orderProductsHash.keys.forEach { key ->
                         val product = appViewModel.orderProductsHash.get(key) as Product
-                        val orderProduct = OrderProduct(orderID.toInt(), product.productId, product.quantity)
+                        val orderProduct = OrderProduct(orderID.toInt(), product.id, product.quantity)
                         orderProductsList.add(orderProduct)
                     }
                     resultInsertOrderProducts = databaseOrderProduct.insertOrderProductsList(orderProductsList)
-                }
 
-                // Update the quantity of products in the database
-                var products = mutableListOf<Product>()
-                appViewModel.orderProductsHash.keys.forEach { key ->
-                    products.add(appViewModel.orderProductsHash.get(key) as Product)
+                    // Update the quantity of products in the database
+                    if (resultInsertOrderProducts) {
+                        var products = mutableListOf<Product>()
+                        appViewModel.orderProductsHash.keys.forEach { key ->
+                            products.add(appViewModel.orderProductsHash.get(key) as Product)
+                        }
+                        resultUpdateQuantityProducts = databaseProducts.updateProductQuantity(products)
+                    }
                 }
-                val resultUpdateQuantityProducts = databaseProducts.updateProductQuantity(products)
 
                 if ((orderID != -1.toLong()) && resultInsertOrderProducts && resultUpdateQuantityProducts) {
                     // Clean the totalPrice of the order and the hash with the products of the order

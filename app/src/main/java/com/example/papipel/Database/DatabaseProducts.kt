@@ -99,14 +99,15 @@ class DatabaseProducts(context: Context) : DatabaseHelper(context) {
 
         // Query to get all the products by the category
         val readDB = this.readableDatabase
-        val query = "SELECT $COL_PRODUCT_ID, $COL_NAME, $COL_PRICE, $COL_QUANTITY " +
-                "FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 AND $COL_CATEGORY = '$category' " +
+        val query = "SELECT * FROM $TABLE_NAME_PRODUCTS " +
+                "WHERE $COL_ACTIVE = 1 AND $COL_CATEGORY = '$category' " +
                 "AND $COL_QUANTITY > 0 ORDER BY $COL_NAME ASC;"
         val result = readDB.rawQuery(query, null)
 
         if (result.moveToFirst()) {
             do {
                 var product = Product()
+                product.id = result.getString(result.getColumnIndex(COL_ID))
                 product.productId = result.getString(result.getColumnIndex(COL_PRODUCT_ID))
                 product.name = result.getString(result.getColumnIndex(COL_NAME))
                 product.price = result.getString(result.getColumnIndex(COL_PRICE)).toDouble()
@@ -129,7 +130,7 @@ class DatabaseProducts(context: Context) : DatabaseHelper(context) {
         for (product in products) {
             val sqlQuery = "UPDATE $TABLE_NAME_PRODUCTS " +
                     "SET $COL_QUANTITY = $COL_QUANTITY - ${product.quantity} " +
-                    "WHERE $COL_PRODUCT_ID = ${product.productId}"
+                    "WHERE $COL_ID = ${product.id}"
             try {
                 writeDB.execSQL(sqlQuery)
             } catch (e: SQLException) {
