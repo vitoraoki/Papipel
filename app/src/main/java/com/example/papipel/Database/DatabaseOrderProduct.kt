@@ -36,7 +36,7 @@ class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
 
         // Query to get all the products given an order
         val readDB = this.readableDatabase
-        val query = "SELECT $COL_NAME, OP.$COL_QUANTITY FROM $TABLE_NAME_ORDER_PRODUCTS as OP " +
+        val query = "SELECT $COL_NAME, OP.$COL_QUANTITY, P.$COL_PRICE FROM $TABLE_NAME_ORDER_PRODUCTS as OP " +
                 "INNER JOIN $TABLE_NAME_PRODUCTS as P ON OP.$COL_PRODUCT_ID = P.$COL_ID " +
                 "WHERE OP.$COL_ORDER_ID = ${order.id};"
         val result = readDB.rawQuery(query, null)
@@ -46,6 +46,7 @@ class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
                 var product = Product()
                 product.name = result.getString(result.getColumnIndex(COL_NAME))
                 product.quantity = result.getString(result.getColumnIndex(COL_QUANTITY)).toInt()
+                product.price = result.getString(result.getColumnIndex(COL_PRICE)).toDouble()
                 products.add(product)
             } while (result.moveToNext())
         }

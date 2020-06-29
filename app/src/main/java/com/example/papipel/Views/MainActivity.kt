@@ -89,6 +89,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onClick(v: View) {
         val id = v.id
+        //        intent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE)
+//        intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
+//        startActivityForResult(intent, 2)
 
         // Deal with the click on the button of close an order
         if (id == R.id.btn_close_order) {
@@ -185,17 +188,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     // Start the Intent with the file chooser
     private fun startFileChooser() {
         val intent = Intent()
-        intent.setAction(Intent.ACTION_OPEN_DOCUMENT)
+        intent.action = Intent.ACTION_OPEN_DOCUMENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.setType("*/*")
+        intent.type = "*/*"
         val mimeTypes = arrayOf("text/csv", "text/comma-separated-values")
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
         startActivityForResult(intent, requestCode)
-
-        //        intent.setAction(Intent.ACTION_OPEN_DOCUMENT_TREE)
-//        intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
-//        startActivityForResult(intent, 2)
     }
 
     // Override the function to deal with the file chosen
