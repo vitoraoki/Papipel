@@ -10,7 +10,7 @@
         <item
             android:id="@+id/activity_products_list"
             android:icon="@drawable/ic_list"
-            android:title="Lista de produtos" />
+            android:title="Estoque" />
 
         <item
             android:id="@+id/activity_orders_list"

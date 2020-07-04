@@ -21,10 +21,12 @@ class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
             val result = writeDB.insert(TABLE_NAME_ORDER_PRODUCTS, null, cv)
 
             if (result == -1.toLong()) {
+                writeDB.close()
                 return false
             }
         }
 
+        writeDB.close()
         return true
     }
 
@@ -52,5 +54,13 @@ class DatabaseOrderProduct(context: Context): DatabaseHelper(context) {
         }
 
         return products
+    }
+
+    // Clean all the data
+    fun cleanDatabase() {
+        val writeDB = this.writableDatabase
+        writeDB.execSQL("DROP TABLE IF EXISTS $TABLE_NAME_ORDER_PRODUCTS")
+        writeDB.execSQL(CREATE_TABLE_ORDER_PRODUCTS)
+        writeDB.close()
     }
 }

@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.example.papipel.Fragments.CreateOrderFragment
 import com.example.papipel.Fragments.OrderProductsFragment
 
-class PageAdapter(fragment: FragmentManager): FragmentPagerAdapter(fragment, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class MainPageAdapter(fragment: FragmentManager): FragmentPagerAdapter(fragment, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     lateinit var createOrderFragment: CreateOrderFragment
     lateinit var orderProductsFragment: OrderProductsFragment

@@ -136,13 +136,25 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // With the confirmation, add the item in the list of items of the order
         alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
             try {
+
+                // First verify if the product has already been added, and if so, update the
+                // totalOrderPrice
+                if (appViewModel.orderProductsHash.containsKey(product.id)) {
+                    appViewModel.totalOrderPrice -= appViewModel.orderProductsHash[product.id]!!.price
+                }
+
+                // Create the orderProduct
                 var orderProduct = Product()
                 orderProduct.id = product.id
                 orderProduct.name = product.name
                 orderProduct.productId = product.productId
                 orderProduct.quantity = numberPicker.value
                 orderProduct.price = numberPicker.value * product.price
+
+                // Add the orderProduct to the hash with all the products of the order and update
+                // the total price
                 appViewModel.orderProductsHash.put(product.id, orderProduct)
+                appViewModel.totalOrderPrice += orderProduct.price
                 Toast.makeText(requireContext(), "Produto adicionado ao pedido", Toast.LENGTH_SHORT)
                     .show()
             } catch (e: java.lang.Exception) {

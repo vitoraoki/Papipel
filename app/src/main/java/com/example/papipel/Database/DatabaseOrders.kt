@@ -14,7 +14,9 @@ class DatabaseOrders(context: Context) : DatabaseHelper(context) {
 
         cv.put(COL_VALUE, order.value)
 
-        return writeDB.insert(TABLE_NAME_ORDERS, null, cv)
+        val result = writeDB.insert(TABLE_NAME_ORDERS, null, cv)
+        writeDB.close()
+        return result
     }
 
     // Get all the orders in the database
@@ -35,6 +37,16 @@ class DatabaseOrders(context: Context) : DatabaseHelper(context) {
             } while (result.moveToNext())
         }
 
+        readDB.close()
+        result.close()
         return orders
+    }
+
+    // Clean all the data
+    fun cleanDatabase() {
+        val writeDB = this.writableDatabase
+        writeDB.execSQL("DROP TABLE IF EXISTS $TABLE_NAME_ORDERS")
+        writeDB.execSQL(CREATE_TABLE_ORDERS)
+        writeDB.close()
     }
 }

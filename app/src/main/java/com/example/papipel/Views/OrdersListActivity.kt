@@ -181,6 +181,11 @@ class OrdersListActivity : AppCompatActivity(), View.OnClickListener {
             intent.putExtra(Intent.EXTRA_STREAM, path)
             startActivity(Intent.createChooser(intent, "Enviar"))
 
+            // After share the csv file with the data, clean the database
+            databaseOrders.cleanDatabase()
+            databaseOrderProduct.cleanDatabase()
+            inflateOrdersEList()
+
         } catch (e: Exception) {
             Toast.makeText(this, "Erro ao enviar o arquivo", Toast.LENGTH_SHORT).show()
         }

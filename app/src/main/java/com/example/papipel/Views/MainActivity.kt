@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.papipel.Adapter.PageAdapter
+import com.example.papipel.Adapter.MainPageAdapter
 import com.example.papipel.Database.DatabaseOrderProduct
 import com.example.papipel.Database.DatabaseOrders
 import com.example.papipel.Database.DatabaseProducts
@@ -25,7 +25,6 @@ import com.example.papipel.Models.Product
 import com.example.papipel.R
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val databaseOrders = DatabaseOrders(this)
     private val databaseOrderProduct = DatabaseOrderProduct(this)
     private lateinit var appViewModel: AppViewModel
-    private lateinit var fragmentAdpter: PageAdapter
+    private lateinit var fragmentAdpter: MainPageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,11 +58,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         // Create the fragment adapter
-        fragmentAdpter = PageAdapter(supportFragmentManager)
-        view_pager.adapter = fragmentAdpter
+        fragmentAdpter = MainPageAdapter(supportFragmentManager)
+        vpager_main.adapter = fragmentAdpter
 
         // Set the tablayout with the viewpager
-        lyt_tab.setupWithViewPager(view_pager)
+        lyt_tab_main.setupWithViewPager(vpager_main)
     }
 
     override fun onStart() {
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             var resultUpdateQuantityProducts = false
 
             // If the order is empty, do not do anything
-            if (appViewModel.totalOrderPrice > 0.0) {
+            if (!appViewModel.orderProductsHash.isEmpty()) {
                 // Insert the order in the database
                 var order = Order()
                 order.value = appViewModel.totalOrderPrice

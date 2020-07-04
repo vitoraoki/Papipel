@@ -64,26 +64,24 @@ class OrderProductsFragment : Fragment() {
     private fun inflateProductsOfOrder() {
 
         // Create the list with the products for the order
-        var products = mutableListOf<Product>()
-        appViewModel.totalOrderPrice = 0.00
+        var orderProducts = mutableListOf<Product>()
         appViewModel.orderProductsHash.keys.forEach { key ->
-            val product = appViewModel.orderProductsHash.get(key) as Product
-            products.add(product)
-            appViewModel.totalOrderPrice += product.price
+            val orderProduct = appViewModel.orderProductsHash[key] as Product
+            orderProducts.add(orderProduct)
         }
 
         // Inflate the listview with the products
         val orderProductsListAdapter = OrderProductsAdapter(
             requireContext(),
             R.layout.order_products_list_row,
-            products
+            orderProducts
         )
         lstv_order_products_list.adapter = orderProductsListAdapter
 
         // Handle with the item selected from the list
         lstv_order_products_list.setOnItemClickListener { parent, view, position, id ->
-            val product = orderProductsListAdapter.getItem(position)
-            removeProductOrder(product)
+            val orderProduct = orderProductsListAdapter.getItem(position)
+            removeProductOrder(orderProduct)
         }
 
         // Set the total price of the order
@@ -92,14 +90,16 @@ class OrderProductsFragment : Fragment() {
     }
 
     // Remove product for the order
-    private fun removeProductOrder(product: Product?) {
+    private fun removeProductOrder(orderProduct: Product?) {
         // Build the alert dialog
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
             .setTitle("Deseja remover o produto do pedido?")
 
-        // With the confirmation, add the item in the list of items of the order
+        // With the confirmation, remove the item in the list of items of the order
         alertDialogBuilder.setPositiveButton("Sim") { dialog, which ->
-            appViewModel.orderProductsHash.remove(product?.id)
+            //First update the total order price
+            appViewModel.totalOrderPrice -= appViewModel.orderProductsHash[orderProduct!!.id]!!.price
+            appViewModel.orderProductsHash.remove(orderProduct?.id)
             inflateProductsOfOrder()
         }
 

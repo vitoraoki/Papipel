@@ -2,17 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:background="@android:color/holo_blue_dark"
+    android:background="@color/colorPrimaryDark"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Papipel"
-        android:textColor="@color/common_google_signin_btn_text_dark_pressed"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+    <ImageView
+        android:layout_width="97dp"
+        android:layout_height="59dp"
+        android:src="@drawable/id_papipel" />
 
 </LinearLayout>
