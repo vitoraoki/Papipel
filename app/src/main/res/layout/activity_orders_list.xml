@@ -20,7 +20,7 @@
         android:clickable="true"
         android:focusable="true"
         android:layout_margin="20dp"
-        android:backgroundTint="@color/negative"
+        android:backgroundTint="@color/positive"
         app:borderWidth="0dp"
         app:srcCompat="@drawable/ic_check"
         tools:ignore="VectorDrawableCompat" />

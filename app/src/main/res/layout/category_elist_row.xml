@@ -12,6 +12,6 @@
         android:text="Categoria"
         android:textColor="#000"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="italic|bold" />
 
 </LinearLayout>

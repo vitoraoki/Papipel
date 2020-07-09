@@ -46,6 +46,7 @@ class OrdersListActivity : AppCompatActivity(), View.OnClickListener {
 
         // Show the back button in toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle("Pedidos")
     }
 
     // Set the buttons listener

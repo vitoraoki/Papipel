@@ -37,7 +37,7 @@ class ProductsListActivity : AppCompatActivity() {
         // Init the view model to store data between fragments
         appViewModel = ViewModelProvider(this).get(AppViewModel::class.java)
         val databaseProducts = DatabaseProducts(this)
-        appViewModel.productsStockList = databaseProducts.getProductsOrderedByQuantity()
+        appViewModel.productsStockList = databaseProducts.getAllProducts()
     }
 
     // Deal with the back button

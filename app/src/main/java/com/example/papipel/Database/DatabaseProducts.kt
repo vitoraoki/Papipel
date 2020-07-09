@@ -44,6 +44,33 @@ class DatabaseProducts(context: Context) : DatabaseHelper(context) {
         return true
     }
 
+    // Get all products
+    fun getAllProducts(): MutableList<Product> {
+        var products = mutableListOf<Product>()
+
+        // Query to get all the products
+        val readDB = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1"
+        val result = readDB.rawQuery(query, null)
+
+        if (result.moveToFirst()) {
+            do {
+                var product = Product()
+                product.productId = result.getString(result.getColumnIndex(COL_PRODUCT_ID))
+                product.name = result.getString(result.getColumnIndex(COL_NAME))
+                product.category = result.getString(result.getColumnIndex(COL_CATEGORY))
+                product.price = result.getString(result.getColumnIndex(COL_PRICE)).toDouble()
+                product.quantity = result.getInt(result.getColumnIndex(COL_QUANTITY))
+                product.description = result.getString(result.getColumnIndex(COL_DESCRIPTION))
+                products.add(product)
+            } while (result.moveToNext())
+        }
+
+        readDB.close()
+        result.close()
+        return products
+    }
+
     // Get all the products in the list ordered by quantity of products
     fun getProductsOrderedByQuantity() : MutableList<Product> {
         var products = mutableListOf<Product>()
@@ -71,13 +98,20 @@ class DatabaseProducts(context: Context) : DatabaseHelper(context) {
         return products
     }
 
-    // Get the categories of the products
-    fun getCategories(): MutableList<String> {
+    // Get the categories of the products. If it is for the order creation, discard products with
+    // quantity equal to 0
+    fun getCategories(order: Boolean): MutableList<String> {
         var categories = mutableListOf<String>()
 
         // Query to get all the categories
         val readDB = this.readableDatabase
-        val query = "SELECT DISTINCT $COL_CATEGORY FROM $TABLE_NAME_PRODUCTS ORDER BY $COL_CATEGORY ASC;"
+        var query: String
+        if (order) {
+            query = "SELECT DISTINCT $COL_CATEGORY FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 AND $COL_QUANTITY > 0 ORDER BY $COL_CATEGORY ASC;"
+        } else {
+            query = "SELECT DISTINCT $COL_CATEGORY FROM $TABLE_NAME_PRODUCTS WHERE $COL_ACTIVE = 1 ORDER BY $COL_CATEGORY ASC;"
+        }
+
         val result = readDB.rawQuery(query, null)
 
         if (result.moveToFirst()) {

@@ -2,7 +2,9 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
 <!--    <color name="colorPrimaryDark">#3700B3</color>-->
-    <color name="colorPrimaryDark">#572222</color>
+    <color name="colorPrimaryDark">#E49A41</color>
+    <color name="spinner_border">#3A3838</color>
+    <color name="product_name">#CC5B2F</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="mainColor">#006197</color>
     <color name="secondColor">#0990D0</color>
@@ -11,4 +13,5 @@
     <color name="dialogTitle">#006197</color>
     <color name="positive">#098A00</color>
     <color name="negative">#B3000C</color>
+    <color name="tab_indicator">#5EC7E6</color>
 </resources>

@@ -86,7 +86,8 @@ class OrdersEListAdapter (val context: Context,
         // Set the text views with the values from the order object
         val product = getChild(groupPosition, childPosition) as Product
         val quantity = product.quantity.toString() + if (product.quantity == 1) " unidade" else " unidades"
-        orderproductNameView.text = "- ${product.name}: $quantity"
+        val price = product.price.toString().replace(".", ",")
+        orderproductNameView.text = "- ${product.name}: $quantity (R$ $price cada unidade)"
 
         return convertView
     }

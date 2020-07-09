@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Create the toolbar with the navigation drawer to have a menu
         setSupportActionBar(toolbar as Toolbar?)
+        supportActionBar?.setTitle("Criar Pedido")
         val togle = ActionBarDrawerToggle(this, drawer_layout,
             toolbar as Toolbar?, R.string.nav_open_drawer, R.string.nav_close_drawer)
         drawer_layout.addDrawerListener(togle)

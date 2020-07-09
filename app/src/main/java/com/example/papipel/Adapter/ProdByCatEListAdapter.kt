@@ -86,7 +86,7 @@ class ProdByCatEListAdapter(val context: Context,
         val product = getChild(groupPosition, childPosition) as Product
         productNameView.text = product.name
         productDescriptionView.text = product.description
-        productPriceView.text = "R\$" + product.price.toString().replace(".", ",")
+        productPriceView.text = "R$ " + product.price.toString().replace(".", ",")
         productQuantityView.text =
             product.quantity.toString() + if (product.quantity == 1) " unidade" else " unidades"
 

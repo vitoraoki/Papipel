@@ -30,7 +30,7 @@ class ProductsListAdapter (
         productNameView.text = product.name
         productCategoryView.text = product.category
         productDescriptionView.text = product.description
-        productPriceView.text = "R\$" + product.price.toString().replace(".", ",")
+        productPriceView.text = "R$ " + product.price.toString().replace(".", ",")
         productQuantityView.text =
             product.quantity.toString() + if (product.quantity == 1) " unidade" else " unidades"
 

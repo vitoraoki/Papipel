@@ -60,7 +60,7 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
         loadSpinnerCategories()
 
         // Load the list of products for the first category on the list
-        if (spn_order_spinner_categories.selectedItem != null) {
+        if (spn_order_categories.selectedItem != null) {
             inflateOrderProductsList()
         }
 
@@ -71,15 +71,15 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Load all the categories to put in the spinner
     fun loadSpinnerCategories() {
         val databaseProducts = DatabaseProducts(requireContext())
-        val categories = databaseProducts.getCategories()
+        val categories = databaseProducts.getCategories(true)
 
         if (!categories.isEmpty()) {
-            spn_order_spinner_categories.adapter = ArrayAdapter(
+            spn_order_categories.adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 categories
             )
-            spn_order_spinner_categories.onItemSelectedListener = this
+            spn_order_categories.onItemSelectedListener = this
         }
     }
 
@@ -92,7 +92,7 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val id = parent?.id
 
-        if (id == R.id.spn_order_spinner_categories) {
+        if (id == R.id.spn_order_categories) {
             inflateOrderProductsList()
         }
     }
@@ -103,7 +103,7 @@ class CreateOrderFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Get the list of products by category from database
         val databaseProducts = DatabaseProducts(requireContext())
         val products = databaseProducts
-            .getProductByCategory(spn_order_spinner_categories.selectedItem.toString())
+            .getProductByCategory(spn_order_categories.selectedItem.toString())
 
         // Inflate the listview with the products
         val productsByCategoryListAdapter = ProductsByCategoryListAdapter(

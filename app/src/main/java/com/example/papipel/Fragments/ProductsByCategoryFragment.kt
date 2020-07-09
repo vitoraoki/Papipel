@@ -78,7 +78,7 @@ class ProductsByCategoryFragment : Fragment() {
 
         // Get the list of categories from database
         val databaseProducts = DatabaseProducts(requireContext())
-        categoriesList = databaseProducts.getCategories()
+        categoriesList = databaseProducts.getCategories(false)
 
         // Put each product in the list of corresponded category
         for (product in products) {
